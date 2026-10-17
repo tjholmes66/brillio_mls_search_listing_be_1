@@ -120,15 +120,29 @@ All errors return a consistent JSON body:
 src/main/java/com/brillio/mls/search
 ├── controller   ListingSearchController, GlobalExceptionHandler
 ├── service      ListingSearchService (filter/rank/paginate), RelevanceScorer
-├── repository   ListingRepository (loads the classpath JSON once at startup)
-├── model        Listing
+├── repository   ListingRepository (streams the classpath JSON per request)
 ├── dto          SearchCriteria, SearchResponse, SearchResultItem, ApiError
 └── exception    InvalidSearchCriteriaException, ListingNotFoundException
 ```
 
+## Data access
+
+The listing JSON is **not** loaded into memory. `ListingRepository.scan(...)`
+opens the file and streams it with Jackson's `MappingIterator`, deserializing
+one record at a time. Each record is tested against the search criteria and
+either projected to a `SearchResultItem` or discarded immediately. The only
+state retained for the whole scan is:
+
+- the list of **matching** listings (needed to sort and paginate globally), and
+- a bounded set of distinct city names.
+
+Memory therefore scales with the number of matches, not the size of the file.
+For even larger datasets the next step would be pushing filtering/ranking down
+to a real data store instead of application-level streaming.
+
 ## Tests
 
-`./mvnw test` — 47 tests:
+`./mvnw test` — 51 tests:
 
 - `ListingSearchControllerTest` (`@WebMvcTest` + mocked service): response
   shape, parameter passing, and every 400/404 error path.
@@ -136,4 +150,5 @@ src/main/java/com/brillio/mls/search
   ranking order, pagination slicing, empty results, unknown city, out-of-range
   page.
 - `SearchCriteriaTest`: defaults, normalization, and every validation rule.
-- `ListingRepositoryTest`: JSON parsing and dataset metadata.
+- `ListingRepositoryTest`: streaming scan (filtering while reading), newest-date
+  and distinct-city tracking, and missing-resource handling.

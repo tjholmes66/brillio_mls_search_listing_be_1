@@ -2,7 +2,6 @@ package com.brillio.mls.search.service;
 
 import java.time.LocalDate;
 
-import com.brillio.mls.search.model.Listing;
 import org.springframework.stereotype.Component;
 
 /**
@@ -34,12 +33,12 @@ public class RelevanceScorer
     static final double RECENCY_HALF_LIFE_DAYS = 14.0;
     private static final double NEUTRAL_BUDGET_FIT = 1.0;
 
-    public double score(Listing listing, Long targetBudget, LocalDate referenceDate)
+    public double score(long price, LocalDate listedDate, Long targetBudget, LocalDate referenceDate)
     {
         double budgetFit = targetBudget == null
                 ? NEUTRAL_BUDGET_FIT
-                : budgetFit(listing.price(), targetBudget);
-        double recency = recency(listing.listedDate(), referenceDate);
+                : budgetFit(price, targetBudget);
+        double recency = recency(listedDate, referenceDate);
 
         double blended = targetBudget == null
                 ? recency
