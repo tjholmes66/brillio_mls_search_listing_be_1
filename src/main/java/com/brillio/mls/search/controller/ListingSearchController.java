@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.brillio.mls.search.dto.SearchCriteria;
 import com.brillio.mls.search.dto.SearchResponse;
-import com.brillio.mls.search.service.ListingSearchService;
+import com.brillio.mls.search.service.ListingSearchServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/listings")
 public class ListingSearchController
 {
-    private final ListingSearchService service;
+    private final ListingSearchServiceImpl service;
 
-    public ListingSearchController(ListingSearchService service)
+    public ListingSearchController(ListingSearchServiceImpl service)
     {
         this.service = service;
     }

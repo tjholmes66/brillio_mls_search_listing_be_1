@@ -1,6 +1,5 @@
 package com.brillio.mls.search.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import com.brillio.mls.search.dto.SearchCriteria;
@@ -12,17 +11,18 @@ import com.brillio.mls.search.repository.ListingRepository.ScanResult;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ListingSearchService
+public class ListingSearchServiceImpl implements ListSearchService
 {
     private final ListingRepository repository;
     private final RelevanceScorer scorer;
 
-    public ListingSearchService(ListingRepository repository, RelevanceScorer scorer)
+    public ListingSearchServiceImpl(ListingRepository repository, RelevanceScorer scorer)
     {
         this.repository = repository;
         this.scorer = scorer;
     }
 
+    @Override
     public SearchResponse search(SearchCriteria criteria)
     {
         ScanResult scan = repository.scan(criteria);
@@ -31,12 +31,13 @@ public class ListingSearchService
         List<ScoredListing> ranked = scan.matches().stream()
                 .map(item -> new ScoredListing(item,
                         scorer.score(item.price(), item.listedDate(), criteria.targetBudget(), scan.newestListedDate())))
-                .sorted(ListingSearchService::byRelevance)
+                .sorted(ListingSearchServiceImpl::byRelevance)
                 .toList();
 
         return paginate(ranked, criteria);
     }
 
+    @Override
     public List<String> availableCities()
     {
         return repository.findDistinctCities();
@@ -93,7 +94,7 @@ public class ListingSearchService
         int toIndex = Math.min(fromIndex + criteria.pageSize(), ranked.size());
 
         List<SearchResultItem> pageItems = ranked.subList(fromIndex, toIndex).stream()
-                .map(ListingSearchService::toResultItem)
+                .map(ListingSearchServiceImpl::toResultItem)
                 .toList();
 
         return SearchResponse.of(pageItems, criteria.page(), criteria.pageSize(), totalResults);

@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ListingSearchServiceTest
 {
     private final ListingRepository repository = new ListingRepository();
-    private final ListingSearchService service = new ListingSearchService(repository, new RelevanceScorer());
+    private final ListingSearchServiceImpl service = new ListingSearchServiceImpl(repository, new RelevanceScorer());
 
     private static SearchCriteria criteria(Long minPrice, Long maxPrice, Integer minBedrooms,
                                            String city, String keyword, Long targetBudget,

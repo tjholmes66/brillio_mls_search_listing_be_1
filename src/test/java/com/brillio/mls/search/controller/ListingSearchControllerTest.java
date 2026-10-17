@@ -8,7 +8,7 @@ import com.brillio.mls.search.dto.SearchResponse;
 import com.brillio.mls.search.dto.SearchResultItem;
 import com.brillio.mls.search.exception.InvalidSearchCriteriaException;
 import com.brillio.mls.search.exception.ListingNotFoundException;
-import com.brillio.mls.search.service.ListingSearchService;
+import com.brillio.mls.search.service.ListingSearchServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ class ListingSearchControllerTest
     private MockMvc mockMvc;
 
     @MockitoBean
-    private ListingSearchService service;
+    private ListingSearchServiceImpl service;
 
     private static SearchResponse sampleResponse()
     {
